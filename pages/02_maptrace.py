@@ -3,8 +3,8 @@ import solara
 import pandas as pd
 import openpyxl
 
-zoom = solara.reactive(9)
-center = solara.reactive((13.4,41))
+zoom = solara.reactive(8)
+center = solara.reactive((41,13.4))
 
 
 class Map(leafmap.Map):
@@ -28,7 +28,7 @@ class Map(leafmap.Map):
         fname= 'https://raw.githubusercontent.com/pd-allen/pd-allen.github.io/main/docs/8thHussarsItaly.xlsx'
 
         data =  pd.read_excel(fname,dtype={'Comments': str},na_values=[''])
-        self.add_points_from_xy(data, x="Longitude", y="Latitude",color="red",popup=["Location","Date", "Comments"],layer_name='points')
+        self.add_points_from_xy(data, x="Longitude", y="Latitude",max_cluster_radius=20,popup=["Location","Date", "Comments"],layer_name='points')
         self.add_layer_control()
         self.add_basemap("OpenTopoMap")
         
@@ -40,6 +40,7 @@ def Page():
         # solara.SliderInt(label="Zoom level", value=zoom, min=1, max=20)
         # using 3rd party widget library require wiring up the events manually
         # using zoom.value and zoom.set
+        
         Map.element(  # type: ignore
             zoom=zoom.value,
             on_zoom=zoom.set,
@@ -51,7 +52,5 @@ def Page():
             height="780px",
         )
        
-        #Map.add_basemap("OpenTopoMap")
-
     solara.Text(f"Zoom: {zoom.value}")
     solara.Text(f"Center: {center.value}")
